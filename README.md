@@ -2,14 +2,31 @@
 
 An agentless, portable AWS security assessment platform that provides comprehensive security posture analysis regardless of what native AWS security services the customer has enabled.
 
+## Why CloudSecure?
+
+Traditional security tools like Prowler, ScoutSuite, or Steampipe run from a CLI on an engineer's laptop. That means:
+
+- The auditor needs **long-lived credentials** (access keys) to the customer's account
+- Credentials travel over the wire, get stored locally, and risk exposure
+- There is no audit trail of *who* ran *what* and *when*
+- Scaling to multiple accounts requires manual effort
+
+**CloudSecure is different.** It runs **100% serverless inside AWS** — no CLI, no laptops, no credentials to share:
+
+- **Delegated access via IAM roles**: Customers grant a read-only role to the CloudSecure account using `STS AssumeRole` with `ExternalId`. No credentials are ever exchanged — only trust is delegated.
+- **Fully serverless**: Lambda, Step Functions, DynamoDB, S3 — nothing to install, patch, or maintain. The platform lives natively in AWS.
+- **Auditable by design**: Every assessment is tracked in DynamoDB with a full execution trail through Step Functions. Customers can see exactly what was accessed and when.
+- **Safe for customers**: Granting a cross-account read-only role is reversible, auditable (CloudTrail), and follows AWS best practices. Handing over access keys is none of those things.
+
 ## Overview
 
 CloudSecure combines open-source security tools (Prowler), custom analysis modules, and AI-powered synthesis (AWS Bedrock Claude) to deliver actionable security insights for AWS environments.
 
 ### Key Features
 
+- **100% Serverless**: Runs natively in AWS — no CLI, no infrastructure to manage
+- **No Credentials Shared**: Cross-account access via IAM role delegation, not access keys
 - **Agentless**: No software deployment required in customer accounts
-- **Tool-Agnostic**: Works independently of customer's existing security tools
 - **AI-Powered**: Bedrock Claude synthesizes findings into actionable intelligence
 - **Compliance-Ready**: Maps to CIS AWS 1.4, NIST 800-53, ISO 27001, GDPR, SOC2
 - **Portable**: Can assess any AWS account with read permissions
