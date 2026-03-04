@@ -136,7 +136,7 @@ pipx install cloudsecure
 Or use the installer script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cloudsecure/cloudsecure/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/carlosinfantes/cloudsecure/main/install.sh | bash
 ```
 
 ### Deploy the Infrastructure
@@ -144,7 +144,7 @@ curl -fsSL https://raw.githubusercontent.com/cloudsecure/cloudsecure/main/instal
 Interactive guided deployment:
 
 ```bash
-git clone https://github.com/cloudsecure/cloudsecure.git && cd cloudsecure
+git clone https://github.com/carlosinfantes/cloudsecure.git && cd cloudsecure
 ./deploy.sh
 ```
 
