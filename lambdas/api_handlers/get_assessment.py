@@ -10,6 +10,7 @@ import os
 
 # Add shared module to path
 import sys
+from decimal import Decimal
 from typing import Any
 
 import boto3
@@ -102,6 +103,13 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         return api_response(500, {"error": "Internal server error"})
 
 
+class _DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Decimal):
+            return int(o) if o == int(o) else float(o)
+        return super().default(o)
+
+
 def api_response(status_code: int, body: dict[str, Any]) -> dict[str, Any]:
     """Create API Gateway response."""
     return {
@@ -111,5 +119,5 @@ def api_response(status_code: int, body: dict[str, Any]) -> dict[str, Any]:
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Amz-Date,X-Api-Key",
         },
-        "body": json.dumps(body),
+        "body": json.dumps(body, cls=_DecimalEncoder),
     }

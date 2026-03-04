@@ -91,3 +91,11 @@ cloudsecure-report.*
 docs/screenshots/demo-report.html
 CLAUDE.md
 docs/screenshots/report-full.png
+
+# Keep .env.example tracked
+!.env.example
+
+# CLI build artifacts
+cli/*.egg-info/
+cli/dist/
+cli/build/

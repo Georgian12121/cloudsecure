@@ -140,6 +140,9 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             "success": True,
             "assessmentId": assessment_id,
             "accountId": account_id,
+            "totalFindings": len(findings),
+            "riskScore": assessment.get("riskScore", 0),
+            "riskLevel": assessment.get("riskLevel", "UNKNOWN"),
             "reportUrls": report_urls,
             "generatedAt": datetime.utcnow().isoformat(),
         }
@@ -409,6 +412,7 @@ def update_assessment_complete(assessment_id: str, report_urls: dict[str, str]) 
                 SET #status = :status,
                     progress = :progress,
                     reportUrls = :reportUrls,
+                    reportS3Key = :reportS3Key,
                     completedAt = :completedAt,
                     updatedAt = :updatedAt
             """,
@@ -419,6 +423,7 @@ def update_assessment_complete(assessment_id: str, report_urls: dict[str, str]) 
                 ":status": "COMPLETED",
                 ":progress": 100,
                 ":reportUrls": report_urls,
+                ":reportS3Key": f"assessments/{assessment_id}/report.json",
                 ":completedAt": datetime.utcnow().isoformat(),
                 ":updatedAt": datetime.utcnow().isoformat(),
             },

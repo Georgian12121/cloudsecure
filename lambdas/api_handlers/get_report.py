@@ -7,6 +7,7 @@ the assessment report from S3.
 import json
 import logging
 import os
+from decimal import Decimal
 from typing import Any
 
 import boto3
@@ -44,7 +45,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         query_params = event.get("queryStringParameters", {}) or {}
         report_format = query_params.get("format", "pdf").lower()
 
-        if report_format not in ["pdf", "json", "csv"]:
+        if report_format not in ["html", "json", "csv"]:
             return api_response(
                 400,
                 {
@@ -95,8 +96,11 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         base_key = report_key.rsplit(".", 1)[0]  # Remove extension
         format_key = f"{base_key}.{report_format}"
 
-        # Generate pre-signed URL
-        s3 = boto3.client("s3")
+        # Generate pre-signed URL (SigV4 required for KMS-encrypted buckets)
+        s3 = boto3.client(
+            "s3",
+            config=boto3.session.Config(signature_version="s3v4"),
+        )
 
         try:
             # Check if the file exists
@@ -143,6 +147,13 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
         return api_response(500, {"error": "Internal server error"})
 
 
+class _DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Decimal):
+            return int(o) if o == int(o) else float(o)
+        return super().default(o)
+
+
 def api_response(status_code: int, body: dict[str, Any]) -> dict[str, Any]:
     """Create API Gateway response."""
     return {
@@ -152,5 +163,5 @@ def api_response(status_code: int, body: dict[str, Any]) -> dict[str, Any]:
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Amz-Date,X-Api-Key",
         },
-        "body": json.dumps(body),
+        "body": json.dumps(body, cls=_DecimalEncoder),
     }

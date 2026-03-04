@@ -99,55 +99,73 @@ Findings map to: **CIS AWS 1.4** · **NIST 800-53** · **ISO 27001** · **GDPR**
 
 ### Prerequisites
 
-- Node.js 18+ / Python 3.12+ / Docker / AWS CLI configured
+- AWS CLI configured with an IAM profile
+- Node.js 18+ and Python 3.12+
+- Docker (optional — required for Prowler CIS scanner)
 
-### Deploy
+### Install the CLI
 
 ```bash
-# Install CDK dependencies
-cd infrastructure && npm install
+pip install cloudsecure
+# or
+pipx install cloudsecure
+```
 
-# Bootstrap CDK (first time only)
-npx cdk bootstrap aws://ACCOUNT_ID/REGION
+Or use the installer script:
 
-# Build Lambda layer
-cd ../lambdas
-docker run --rm --entrypoint /bin/bash \
-  -v "$(pwd)/layer:/layer" \
-  public.ecr.aws/lambda/python:3.12 \
-  -c "pip install pydantic jinja2 boto3 --target /layer/python/ --no-cache-dir"
-cp -r shared analyzers layer/python/
+```bash
+curl -fsSL https://raw.githubusercontent.com/carlosinfantes/cloudsecure/main/install.sh | bash
+```
 
-# Deploy
-cd ../infrastructure
-npx cdk deploy --all --require-approval never
+### Deploy the Infrastructure
+
+Interactive guided deployment:
+
+```bash
+git clone https://github.com/carlosinfantes/cloudsecure.git && cd cloudsecure
+./deploy.sh
+```
+
+Or manually:
+
+```bash
+cp .env.example .env    # Edit with your AWS profile, region, etc.
+make install && make deploy
+
+# Deploy without Docker/Prowler
+SKIP_PROWLER=true make deploy
 ```
 
 ### Onboard a Customer Account
 
 ```bash
-# Customer deploys a read-only role (CloudFormation)
-aws cloudformation create-stack \
-  --stack-name CloudSecureRole \
-  --template-body file://onboarding/cloudformation/cloudsecure-role.yaml \
-  --parameters \
-    ParameterKey=CloudSecureAccountId,ParameterValue=YOUR_ACCOUNT_ID \
-    ParameterKey=ExternalId,ParameterValue=your-external-id \
-  --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation deploy \
+  --template-file onboarding/cloudformation/cloudsecure-role.yaml \
+  --stack-name CloudSecure-AssessmentRole \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --parameter-overrides ExternalId=your-external-id
 ```
 
 ### Run an Assessment
 
 ```bash
-ASSESSMENT_ID=$(uuidgen)
-aws stepfunctions start-execution \
-  --state-machine-arn arn:aws:states:REGION:ACCOUNT_ID:stateMachine:cloudsecure-assessment \
-  --input "{
-    \"assessmentId\": \"$ASSESSMENT_ID\",
-    \"accountId\": \"TARGET_ACCOUNT_ID\",
-    \"roleArn\": \"arn:aws:iam::TARGET_ACCOUNT_ID:role/CloudSecureAssessmentRole\",
-    \"externalId\": \"your-external-id\"
-  }"
+# Start assessment (polls until complete by default)
+cloudsecure --profile YOUR_PROFILE assess \
+  --account-id 123456789012 \
+  --role-arn arn:aws:iam::123456789012:role/CloudSecureAssessmentRole \
+  --external-id your-external-id
+
+# List all assessments
+cloudsecure --profile YOUR_PROFILE status
+
+# Check specific assessment
+cloudsecure --profile YOUR_PROFILE status <ASSESSMENT_ID>
+
+# Download report (HTML opens in browser)
+cloudsecure --profile YOUR_PROFILE report <ASSESSMENT_ID> --format html --open
+
+# Export as JSON or CSV
+cloudsecure --profile YOUR_PROFILE report <ASSESSMENT_ID> --format json -o report.json
 ```
 
 ### Reports
@@ -166,17 +184,20 @@ s3://cloudsecure-reports-ACCOUNT_ID/assessments/ASSESSMENT_ID/
 | Infrastructure | AWS CDK (TypeScript) |
 | Analyzers | Python 3.12 (Lambda) |
 | Orchestration | AWS Step Functions |
-| API | API Gateway REST |
+| API | API Gateway REST (IAM auth) |
 | Database | DynamoDB |
 | Storage | S3 + KMS encryption |
 | AI Synthesis | AWS Bedrock (Claude) |
-| Security Scanner | Prowler 5.x (Lambda container) |
+| Security Scanner | Prowler 5.x (Lambda container, optional) |
+| Reports | HTML, JSON, CSV (Jinja2 templates) |
+| CLI | Python (click, rich, boto3) — `pip install cloudsecure` |
 
 ## Documentation
 
-- [Technical Specification](./cloudsecure-assessment-platform-spec.md)
+- [Technical Specification](./docs/cloudsecure-assessment-platform-spec.md)
 - [Implementation Progress](./IMPLEMENTATION.md)
-- [Contributing](./CONTRIBUTING.md)
+- [Architecture Diagrams](./docs/diagrams/)
+- [CLI Documentation](./cli/README.md)
 
 ## License
 

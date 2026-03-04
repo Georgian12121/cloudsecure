@@ -4,7 +4,7 @@
 **Author**: CloudSecure Contributors
 **Started**: 2025-01-23
 **Current Sprint**: Deployed & Operational
-**Last Deployment**: 2026-01-23 (Region: eu-west-1)
+**Last Deployment**: 2026-03-04 (Region: eu-west-1)
 
 ---
 
@@ -18,6 +18,17 @@
 | Sprint 4: Prowler Integration | ✅ Complete | 100% |
 | Sprint 5: AI & Reports | ✅ Complete | 100% |
 | Sprint 6: Polish | ✅ Complete | 100% |
+| Post-Sprint: CLI & Distribution | ✅ Complete | 100% |
+
+### Post-Sprint: CLI & Distribution (2026-03)
+- [x] Python CLI tool (`pip install cloudsecure`) with SigV4-signed API calls
+- [x] PyPI packaging with `pyproject.toml`, GitHub Actions publish workflow
+- [x] `install.sh` — curl-downloadable CLI installer
+- [x] `deploy.sh` — interactive infrastructure deployment script
+- [x] Makefile with build, deploy, test, lint targets
+- [x] `.env.example` configuration template
+- [x] Prowler made optional (`SKIP_PROWLER=true`, `skipProwler` CDK context)
+- [x] Bug fixes: DynamoDB Decimal serialization, presigned URL SigV4, reportS3Key persistence, format validation
 
 ---
 
@@ -51,7 +62,7 @@
 - [x] Implement aws_client.py (STS AssumeRole helper)
 
 ### CI/CD Pipeline
-- [x] Create Bitbucket Pipelines CI workflow
+- [x] Create CI/CD workflow
 - [x] Add CDK synth validation
 - [x] Add Python linting (Ruff, Black)
 - [x] Create deploy workflow for dev/test/main
@@ -291,7 +302,7 @@
 - Created Storage Stack (DynamoDB tables, S3, KMS)
 - Created API Stack (API Gateway with IAM auth)
 - Created shared Python modules (models, crf_models, aws_client)
-- Set up Bitbucket Pipelines CI/CD
+- Set up CI/CD pipeline
 
 ---
 
@@ -338,6 +349,26 @@
 - Prowler execution time may exceed Lambda limits
 - Bedrock token costs need monitoring
 - WeasyPrint packaging complexity
+
+---
+
+## Future Roadmap
+
+### Instance Security Scan (Sprint 7+)
+
+Instance-level threat assessment via SSM. Extends CloudSecure from account posture to live instance analysis.
+
+- **Spec**: [`docs/features/instance-scan-spec.md`](docs/features/instance-scan-spec.md)
+- **CLI**: `cloudsecure scan --instance i-0abc123 --account 123456789012`
+- **Modes**: `live` (production, attack vector analysis) / `forensic` (isolated, incident investigation)
+- **Access**: SSM RunCommand (agentless, no SSH)
+- **AI**: Bedrock analyzes system state and identifies how an attacker would exploit it
+
+| Sprint | Scope |
+|--------|-------|
+| Sprint 7 | MVP: Tier 1 system inventory, Amazon Linux, JSON report |
+| Sprint 8 | Web app analysis, Ubuntu, HTML reports, forensic mode |
+| Sprint 9 | Threat indicators, CVE matching, batch scan, all distros |
 
 ### Deployment Fixes Applied (2026-01-23)
 1. **Prowler Container**: Disabled DockerImageFunction, created placeholder Lambda
