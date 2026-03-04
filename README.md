@@ -94,7 +94,8 @@ CloudSecure generates professional HTML reports with AI-powered executive summar
 | Storage | S3 + KMS |
 | AI | AWS Bedrock Claude 3.5 |
 | Security Scanner | Prowler 5.x (Lambda Container) |
-| PDF Generation | WeasyPrint (Future) |
+| Reports | HTML, JSON, CSV (Jinja2 templates) |
+| CLI | Python (click, rich, boto3) — `pip install cloudsecure` |
 
 ### Active Analyzers
 
@@ -120,65 +121,75 @@ CloudSecure generates professional HTML reports with AI-powered executive summar
 
 ### Prerequisites
 
-- Node.js 18+
-- Python 3.12+
-- AWS CLI configured
-- Docker (for Lambda layer builds)
+- AWS CLI configured with an IAM profile
+- Node.js 18+ and Python 3.12+
+- Docker (optional — required for Prowler CIS scanner)
 
-### Quick Start
+### Install the CLI
 
 ```bash
-# 1. Install dependencies
-cd infrastructure && npm install
-
-# 2. Bootstrap CDK (first time only)
-npx cdk bootstrap aws://ACCOUNT_ID/REGION
-
-# 3. Build Lambda layer with correct Linux binaries
-cd ../lambdas
-docker run --rm --entrypoint /bin/bash \
-  -v "$(pwd)/layer:/layer" \
-  public.ecr.aws/lambda/python:3.12 \
-  -c "pip install pydantic jinja2 boto3 --target /layer/python/ --no-cache-dir"
-cp -r shared analyzers layer/python/
-
-# 4. Deploy all stacks
-cd ../infrastructure
-npx cdk deploy --all --require-approval never
-
-# 5. Create assessment role in target account
-aws cloudformation create-stack \
-  --stack-name CloudSecureRole \
-  --template-body file://../onboarding/cloudformation/cloudsecure-role.yaml \
-  --parameters \
-    ParameterKey=CloudSecureAccountId,ParameterValue=ACCOUNT_ID \
-    ParameterKey=ExternalId,ParameterValue=cloudsecure-test-12345 \
-  --capabilities CAPABILITY_NAMED_IAM
-
-# 6. Run assessment
-ASSESSMENT_ID=$(uuidgen)
-aws stepfunctions start-execution \
-  --state-machine-arn arn:aws:states:REGION:ACCOUNT_ID:stateMachine:cloudsecure-assessment-dev \
-  --input "{
-    \"assessmentId\": \"$ASSESSMENT_ID\",
-    \"accountId\": \"ACCOUNT_ID\",
-    \"roleArn\": \"arn:aws:iam::ACCOUNT_ID:role/CloudSecureAssessmentRole\",
-    \"externalId\": \"cloudsecure-test-12345\"
-  }"
+pip install cloudsecure
+# or
+pipx install cloudsecure
 ```
 
-### Deployment
+Or use the installer script:
 
 ```bash
-# Development
-cd infrastructure
-npx cdk deploy --all --require-approval never
+curl -fsSL https://raw.githubusercontent.com/cloudsecure/cloudsecure/main/install.sh | bash
+```
 
-# Note: If Lambda layer updates fail with "export in use" error:
-aws cloudformation delete-stack --stack-name CloudSecure-API-dev
-aws cloudformation delete-stack --stack-name CloudSecure-Orchestration-dev
-# Wait for deletion, then redeploy
-npx cdk deploy --all --require-approval never
+### Deploy the Infrastructure
+
+Interactive guided deployment:
+
+```bash
+git clone https://github.com/cloudsecure/cloudsecure.git && cd cloudsecure
+./deploy.sh
+```
+
+Or manually:
+
+```bash
+cp .env.example .env    # Edit with your AWS profile, region, etc.
+make install && make deploy
+
+# Deploy without Docker/Prowler
+SKIP_PROWLER=true make deploy
+```
+
+### Run an Assessment
+
+```bash
+# Start assessment (polls until complete by default)
+cloudsecure --profile YOUR_PROFILE assess \
+  --account-id 123456789012 \
+  --role-arn arn:aws:iam::123456789012:role/CloudSecureAssessmentRole \
+  --external-id your-external-id
+
+# List all assessments
+cloudsecure --profile YOUR_PROFILE status
+
+# Check specific assessment
+cloudsecure --profile YOUR_PROFILE status <ASSESSMENT_ID>
+
+# Download report (HTML opens in browser)
+cloudsecure --profile YOUR_PROFILE report <ASSESSMENT_ID> --format html --open
+
+# Export as JSON or CSV
+cloudsecure --profile YOUR_PROFILE report <ASSESSMENT_ID> --format json -o report.json
+```
+
+### Customer Onboarding
+
+Create an assessment role in the target account:
+
+```bash
+aws cloudformation deploy \
+  --template-file onboarding/cloudformation/cloudsecure-role.yaml \
+  --stack-name CloudSecure-AssessmentRole \
+  --capabilities CAPABILITY_NAMED_IAM \
+  --parameter-overrides ExternalId=your-external-id
 ```
 
 ### Reports Location
@@ -193,8 +204,10 @@ s3://cloudsecure-reports-ACCOUNT_ID-dev/assessments/ASSESSMENT_ID/
 
 ## Documentation
 
-- [Technical Specification](./cloudsecure-assessment-platform-spec.md)
+- [Technical Specification](./docs/cloudsecure-assessment-platform-spec.md)
 - [Implementation Progress](./IMPLEMENTATION.md)
+- [Architecture Diagrams](./docs/diagrams/)
+- [CLI Documentation](./cli/README.md)
 
 ## License
 

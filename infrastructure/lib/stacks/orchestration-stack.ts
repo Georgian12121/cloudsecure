@@ -16,8 +16,8 @@ export interface OrchestrationStackProps extends cdk.StackProps {
   encryptionAnalyzerLambda: lambda.IFunction;
   cloudtrailAnalyzerLambda: lambda.IFunction;
   aggregateFindingsLambda: lambda.IFunction;
-  // Prowler Scanner (Container Image)
-  prowlerScannerLambda: lambda.IFunction;
+  // Prowler Scanner (Container Image) - optional when skipProwler=true
+  prowlerScannerLambda?: lambda.IFunction;
   // AI & Reports (Sprint 5)
   aiSynthesisLambda: lambda.IFunction;
   reportGeneratorLambda: lambda.IFunction;
@@ -102,11 +102,21 @@ export class OrchestrationStack extends cdk.Stack {
     });
 
     // Prowler Scanner Task (runs in parallel with other analyzers)
-    const prowlerScannerTask = new tasks.LambdaInvoke(this, 'ProwlerScanner', {
-      lambdaFunction: prowlerScannerLambda,
-      outputPath: '$.Payload',
-      retryOnServiceExceptions: true,
-    });
+    // When Prowler is skipped, use a Pass state that returns a no-op result
+    const prowlerScannerTask: sfn.IChainable = prowlerScannerLambda
+      ? new tasks.LambdaInvoke(this, 'ProwlerScanner', {
+          lambdaFunction: prowlerScannerLambda,
+          outputPath: '$.Payload',
+          retryOnServiceExceptions: true,
+        })
+      : new sfn.Pass(this, 'ProwlerSkipped', {
+          result: sfn.Result.fromObject({
+            success: true,
+            skipped: true,
+            message: 'Prowler scanner not configured',
+            findings: [],
+          }),
+        });
 
     // Native Service Puller Task (runs in parallel - Sprint 6)
     const nativeServicePullerTask = new tasks.LambdaInvoke(this, 'NativeServicePuller', {

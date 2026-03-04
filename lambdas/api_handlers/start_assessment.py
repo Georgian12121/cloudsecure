@@ -167,7 +167,7 @@ def handler(event: dict[str, Any], context: Any) -> dict[str, Any]:
             {
                 "assessmentId": str(assessment.assessment_id),
                 "accountId": account_id,
-                "status": assessment.status.value,
+                "status": assessment.status,
                 "createdAt": assessment.created_at.isoformat(),
                 "executionArn": execution_arn,
                 "message": "Assessment started successfully",

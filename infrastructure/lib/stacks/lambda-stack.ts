@@ -31,9 +31,9 @@ export class LambdaStack extends cdk.Stack {
   public readonly cloudtrailAnalyzerLambda: lambda.Function;
   public readonly aggregateFindingsLambda: lambda.Function;
 
-  // Prowler Scanner (Container-based Lambda)
-  public readonly prowlerScannerLambda: lambda.DockerImageFunction;
-  public readonly prowlerRepository: ecr.IRepository;
+  // Prowler Scanner (Container-based Lambda) - optional when skipProwler=true
+  public readonly prowlerScannerLambda?: lambda.DockerImageFunction;
+  public readonly prowlerRepository?: ecr.IRepository;
 
   // AI & Reports (Sprint 5)
   public readonly aiSynthesisLambda: lambda.Function;
@@ -240,39 +240,42 @@ export class LambdaStack extends cdk.Stack {
     // ==================== Prowler Scanner (Container-based Lambda) ====================
     // Prowler runs as a container-based Lambda function.
     // Container image is pre-built and pushed to ECR before CDK deploy.
-    // The ECR repository was created manually and the image pushed externally.
+    // Skip entirely when skipProwler=true (e.g., Docker not available).
+    const skipProwler = this.node.tryGetContext('skipProwler') === 'true';
 
-    // Import existing ECR Repository for Prowler Lambda image
-    this.prowlerRepository = ecr.Repository.fromRepositoryName(
-      this,
-      'ProwlerRepository',
-      `cloudsecure-prowler-${envName}`
-    );
+    if (!skipProwler) {
+      // Import existing ECR Repository for Prowler Lambda image
+      this.prowlerRepository = ecr.Repository.fromRepositoryName(
+        this,
+        'ProwlerRepository',
+        `cloudsecure-prowler-${envName}`
+      );
 
-    // Prowler Scanner Lambda (Container-based) - uses pre-pushed ECR image
-    this.prowlerScannerLambda = new lambda.DockerImageFunction(this, 'ProwlerScannerLambda', {
-      functionName: `cloudsecure-prowler-scanner-${envName}`,
-      code: lambda.DockerImageCode.fromEcr(this.prowlerRepository, {
-        tagOrDigest: 'latest',
-      }),
-      timeout: cdk.Duration.minutes(15),
-      memorySize: 3072,
-      ephemeralStorageSize: cdk.Size.gibibytes(1),
-      environment: {
-        ASSESSMENTS_TABLE: assessmentsTable.tableName,
-        FINDINGS_TABLE: findingsTable.tableName,
-        LOG_LEVEL: envName === 'prod' ? 'INFO' : 'DEBUG',
-      },
-      logRetention: logs.RetentionDays.ONE_MONTH,
-      tracing: lambda.Tracing.ACTIVE,
-      description: 'Prowler security scanner for CIS AWS benchmarks',
-    });
+      // Prowler Scanner Lambda (Container-based) - uses pre-pushed ECR image
+      this.prowlerScannerLambda = new lambda.DockerImageFunction(this, 'ProwlerScannerLambda', {
+        functionName: `cloudsecure-prowler-scanner-${envName}`,
+        code: lambda.DockerImageCode.fromEcr(this.prowlerRepository, {
+          tagOrDigest: 'latest',
+        }),
+        timeout: cdk.Duration.minutes(15),
+        memorySize: 3072,
+        ephemeralStorageSize: cdk.Size.gibibytes(1),
+        environment: {
+          ASSESSMENTS_TABLE: assessmentsTable.tableName,
+          FINDINGS_TABLE: findingsTable.tableName,
+          LOG_LEVEL: envName === 'prod' ? 'INFO' : 'DEBUG',
+        },
+        logRetention: logs.RetentionDays.ONE_MONTH,
+        tracing: lambda.Tracing.ACTIVE,
+        description: 'Prowler security scanner for CIS AWS benchmarks',
+      });
 
-    // Grant permissions to Prowler Lambda
-    assessmentsTable.grantReadWriteData(this.prowlerScannerLambda);
-    findingsTable.grantWriteData(this.prowlerScannerLambda);
-    encryptionKey.grantEncryptDecrypt(this.prowlerScannerLambda);
-    this.prowlerScannerLambda.addToRolePolicy(assumeRolePolicy);
+      // Grant permissions to Prowler Lambda
+      assessmentsTable.grantReadWriteData(this.prowlerScannerLambda);
+      findingsTable.grantWriteData(this.prowlerScannerLambda);
+      encryptionKey.grantEncryptDecrypt(this.prowlerScannerLambda);
+      this.prowlerScannerLambda.addToRolePolicy(assumeRolePolicy);
+    }
 
     // ==================== AI & Reports (Sprint 5) ====================
 
@@ -370,17 +373,21 @@ export class LambdaStack extends cdk.Stack {
       exportName: `CloudSecure-DiscoveryModuleLambda-${envName}`,
     });
 
-    new cdk.CfnOutput(this, 'ProwlerScannerLambdaArn', {
-      value: this.prowlerScannerLambda.functionArn,
-      description: 'Prowler Scanner Lambda ARN',
-      exportName: `CloudSecure-ProwlerScanner-${envName}`,
-    });
+    if (this.prowlerScannerLambda) {
+      new cdk.CfnOutput(this, 'ProwlerScannerLambdaArn', {
+        value: this.prowlerScannerLambda.functionArn,
+        description: 'Prowler Scanner Lambda ARN',
+        exportName: `CloudSecure-ProwlerScanner-${envName}`,
+      });
+    }
 
-    new cdk.CfnOutput(this, 'ProwlerRepositoryUri', {
-      value: this.prowlerRepository.repositoryUri,
-      description: 'Prowler ECR Repository URI',
-      exportName: `CloudSecure-ProwlerRepository-${envName}`,
-    });
+    if (this.prowlerRepository) {
+      new cdk.CfnOutput(this, 'ProwlerRepositoryUri', {
+        value: this.prowlerRepository.repositoryUri,
+        description: 'Prowler ECR Repository URI',
+        exportName: `CloudSecure-ProwlerRepository-${envName}`,
+      });
+    }
 
     new cdk.CfnOutput(this, 'AISynthesisLambdaArn', {
       value: this.aiSynthesisLambda.functionArn,

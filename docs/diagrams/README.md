@@ -1,6 +1,6 @@
 # CloudSecure Diagrams
 
-This folder contains Draw.io diagrams for the CloudSecure presentation.
+This folder contains Draw.io diagrams for CloudSecure documentation.
 
 ## Diagram Files
 
@@ -39,44 +39,15 @@ These diagrams use the AWS Architecture Icons. To access them in Draw.io:
 
 ## Exporting Diagrams
 
-### Export to PNG (for slides)
+### Export to PNG
 1. Open diagram in Draw.io
 2. File > Export as > PNG...
 3. Set scale to 2x for high resolution
 4. Set border width to 10
-5. Save to `exports/` folder
 
-### Export to SVG (for web)
+### Export to SVG
 1. Open diagram in Draw.io
 2. File > Export as > SVG...
-3. Save to `exports/` folder
-
-### Batch Export (all diagrams)
-For consistency, export all diagrams at once:
-1. Open each diagram
-2. Export with these settings:
-   - Format: PNG
-   - Scale: 200%
-   - Border: 10px
-   - Background: White
-
-## Export Folder Structure
-
-```
-exports/
-├── architecture.png
-├── workflow.png
-├── security-model.png
-└── analyzer-coverage.png
-```
-
-## Embedding in Marp Presentation
-
-After exporting, update the presentation with:
-
-```markdown
-![Architecture](../diagrams/exports/architecture.png)
-```
 
 ## Color Palette
 
@@ -91,11 +62,3 @@ The diagrams follow this consistent color scheme:
 | AI/Bedrock | Teal | #E0F2F1 / #00695C |
 | Network | Purple | #E1BEE7 / #7B1FA2 |
 | Prowler | Dark Gray | #263238 |
-
-## Tips
-
-1. **Consistency**: Use the same icon style throughout
-2. **Alignment**: Use Draw.io's alignment tools
-3. **Spacing**: Keep consistent spacing between elements
-4. **Labels**: Use clear, concise labels
-5. **Arrows**: Use consistent arrow styles

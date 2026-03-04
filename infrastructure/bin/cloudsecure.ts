@@ -49,7 +49,7 @@ const orchestrationStack = new OrchestrationStack(app, `CloudSecure-Orchestratio
   encryptionAnalyzerLambda: lambdaStack.encryptionAnalyzerLambda,
   cloudtrailAnalyzerLambda: lambdaStack.cloudtrailAnalyzerLambda,
   aggregateFindingsLambda: lambdaStack.aggregateFindingsLambda,
-  // Prowler Scanner (Container Image)
+  // Prowler Scanner (Container Image) - may be undefined when skipProwler=true
   prowlerScannerLambda: lambdaStack.prowlerScannerLambda,
   // AI & Reports (Sprint 5)
   aiSynthesisLambda: lambdaStack.aiSynthesisLambda,
