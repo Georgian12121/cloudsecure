@@ -127,7 +127,8 @@ if [ "$HAS_DOCKER" = false ]; then
 else
   echo ""
   read -rp "Include Prowler CIS scanner? (requires Docker) [Y/n]: " INCLUDE_PROWLER
-  if [[ "${INCLUDE_PROWLER,,}" == "n" ]]; then
+  INCLUDE_PROWLER=$(echo "$INCLUDE_PROWLER" | tr '[:upper:]' '[:lower:]')
+  if [[ "$INCLUDE_PROWLER" == "n" ]]; then
     SKIP_PROWLER=true
   fi
 fi
